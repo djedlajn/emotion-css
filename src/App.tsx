@@ -1,12 +1,19 @@
 /** @jsx jsx */
 
-import { jsx } from '@emotion/core'
-import css from '@emotion/css/macro'
-import React from 'react'
-import Cell from './components/Cell'
-import Layout from './layouts/Layout'
+import { jsx } from "@emotion/core"
+import css from "@emotion/css/macro"
+import React, { useState } from "react"
+import Cell from "./components/Cell"
+import Layout from "./layouts/Layout"
+import startGame, { Cords } from "./game"
+
 const arr = Array.from(Array(100).keys())
 const App: React.FC = () => {
+  const [initialMove, setInitalMove] = useState<Cords | false>(false)
+  const [game, setGame] = useState<number[][]>([])
+
+  // setGame(startGame(initialMove || { x: 0, y: 0 }, 10))
+  console.log(initialMove)
   return (
     <Layout>
       <div>
@@ -29,8 +36,13 @@ const App: React.FC = () => {
               height: calc(100vh - 100px);
             `}
           >
+            {/* {initialMove &&
+              arr.map((i, idx) => {
+                return <Cell value={i} key={idx} initial={setInitalMove} />
+              })} */}
+
             {arr.map((i, idx) => {
-              return <Cell value={i} key={idx} />
+              return <Cell value={i} key={idx} initial={setInitalMove} />
             })}
           </div>
         </div>

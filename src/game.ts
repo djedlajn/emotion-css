@@ -4,12 +4,12 @@ interface Cell extends Cords {
   pickedEdge: Cords | {}
 }
 
-interface Cords {
+export interface Cords {
   x: number
   y: number
 }
 
-type Matrice = Cell[][]
+export type Matrice = Cell[][]
 
 const shuffle = (a: any) => {
   for (let i = a.length - 1; i > 0; i--) {
@@ -30,14 +30,14 @@ const matrix = (width: number, height: number): Cell[][] => {
         y: 0,
         visited: false,
         neibhoursAvailable: [],
-        pickedEdge: {},
-      }),
+        pickedEdge: {}
+      })
     )
 }
 
 const checkTraversability = (
   startCords: Cords,
-  matrice: Matrice,
+  matrice: Matrice
 ): Cell | undefined => {
   // Check left
   if (startCords.x === undefined) {
@@ -105,7 +105,7 @@ const checkTraversability = (
 const generateMaze = (
   matrice: Cell[][],
   startCords: { x: number; y: number },
-  level: number,
+  level: number
 ): Cell[] | undefined => {
   const traversable = checkTraversability(startCords, matrice)
   if (!traversable) return undefined
@@ -123,34 +123,48 @@ const generateMaze = (
   return undefined
 }
 
-// let matrice = matrix(10, 10).map(
-//   (i, idx): Cell[] => {
-//     return i.map((_, idy) => {
-//       return {
-//         x: idx,
-//         y: idy,
-//         visited: false,
-//         neibhoursAvailable: [],
-//         pickedEdge: {},
-//       }
-//     })
-//   },
-// )
-// const gen = generateMaze(matrice, { x: 0, y: 0 }, 33)
-// // console.log(gen)
+let matrice = matrix(10, 10).map(
+  (i, idx): Cell[] => {
+    return i.map((_, idy) => {
+      return {
+        x: idx,
+        y: idy,
+        visited: false,
+        neibhoursAvailable: [],
+        pickedEdge: {}
+      }
+    })
+  }
+)
+const startGame = (startCords: Cords, level: number) => {
+  let matrice = matrix(10, 10).map(
+    (i, idx): Cell[] => {
+      return i.map((_, idy) => {
+        return {
+          x: idx,
+          y: idy,
+          visited: false,
+          neibhoursAvailable: [],
+          pickedEdge: {}
+        }
+      })
+    }
+  )
+  const gen = generateMaze(matrice, startCords, 33)
 
-// const mtr: number[][] = Array(10)
-//   .fill(0)
-//   .map(_ => Array(10).fill(0))
+  const mtr: number[][] = Array(10)
+    .fill(0)
+    .map(_ => Array(10).fill(0))
 
-// let num = 0
-// if (gen) {
-//   gen.map(i => {
-//     num++
-//     mtr[i.x][i.y] = num
-//   })
-// }
+  let num = 0
+  if (gen) {
+    gen.map(i => {
+      num++
+      mtr[i.x][i.y] = num
+    })
+  }
 
-// console.log(mtr)
+  return mtr
+}
 
-export default generateMaze
+export default startGame
