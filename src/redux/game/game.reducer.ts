@@ -1,26 +1,26 @@
-export interface GameState {
-  game: number[][]
-}
-
-export const START_GAME = "START_GAME"
-
-interface StartGameAction {
-  type: typeof START_GAME
-  payload: number[][]
-}
-
-export type GameActionTypes = StartGameAction
+import { GameActionTypes, GameState } from './game.types'
 
 const initialState: GameState = {
-  game: []
+  game: [],
+  lives: 0,
+  initialMove: false,
 }
 
-const gameReducer = (state = initialState, action: GameActionTypes) => {
+const gameReducer = (
+  state = initialState,
+  action: GameActionTypes,
+): GameState => {
   switch (action.type) {
-    case "START_GAME":
+    case 'START_GAME':
       return {
         ...state,
-        game: action.payload
+        game: action.payload.game,
+        initialMove: action.payload.initialMove,
+      }
+    case 'SET_LIVES':
+      return {
+        ...state,
+        lives: action.payload.lives,
       }
     default:
       return state

@@ -1,19 +1,27 @@
 /** @jsx jsx */
 
-import { jsx } from "@emotion/core"
-import css from "@emotion/css/macro"
-import React, { useState } from "react"
-import Cell from "./components/Cell"
-import Layout from "./layouts/Layout"
-import startGame, { Cords } from "./game"
+import { jsx } from '@emotion/core'
+import css from '@emotion/css/macro'
+import React, { useState } from 'react'
+import { connect } from 'react-redux'
+import Cell from './components/Cell'
+import { Cords } from './game'
+import Layout from './layouts/Layout'
+import { GameState } from './redux/game/game.types'
+import { AppState } from './redux/rootReducer'
 
 const arr = Array.from(Array(100).keys())
-const App: React.FC = () => {
+
+interface AppProps {}
+
+type Props = AppProps & LinkStateToProps & LinkStateToProps
+
+const App: React.FC<Props> = ({ gameState }) => {
   const [initialMove, setInitalMove] = useState<Cords | false>(false)
   const [game, setGame] = useState<number[][]>([])
 
-  // setGame(startGame(initialMove || { x: 0, y: 0 }, 10))
-  console.log(initialMove)
+  console.log(gameState)
+
   return (
     <Layout>
       <div>
@@ -51,4 +59,19 @@ const App: React.FC = () => {
   )
 }
 
-export default App
+interface LinkStateToProps {
+  gameState: GameState
+}
+
+interface LinkDispatchToProps {}
+
+const mapStateToProps = (state: AppState, ownProps: AppProps) => ({
+  gameState: state.game,
+})
+
+const mapDispatchToProps = (dispatch, props) => ({})
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(App)
