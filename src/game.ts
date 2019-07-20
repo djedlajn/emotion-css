@@ -2,6 +2,8 @@ export interface Cell extends Cords {
   visited: boolean
   neibhoursAvailable: Cords[]
   pickedEdge: Cords | {}
+  userClicked?: boolean
+  possibleMove?: boolean
 }
 
 export interface Cords {
@@ -33,6 +35,62 @@ const matrix = (width: number, height: number): Cell[][] => {
         pickedEdge: {},
       }),
     )
+}
+
+export const checkAvailable = ({ x, y }: Cords, matrice: Matrice): Matrice => {
+  const cell: Cell = matrice[x][y]
+
+  if (cell.x - 3 >= 0 && !matrice[cell.x - 3][cell.y].userClicked) {
+    matrice[cell.x - 3][cell.y].possibleMove = true
+  }
+
+  // Check right
+  if (cell.x + 3 < 10 && !matrice[cell.x + 3][cell.y].userClicked) {
+    matrice[cell.x + 3][cell.y].possibleMove = true
+  }
+
+  if (cell.y - 3 >= 0 && !matrice[cell.x][cell.y - 3].userClicked) {
+    matrice[cell.x][cell.y - 3].possibleMove = true
+  }
+  if (cell.y + 3 < 10 && !matrice[cell.x][cell.y + 3].userClicked) {
+    matrice[cell.x][cell.y + 3].possibleMove = true
+  }
+
+  // Check Diagonals
+
+  if (
+    cell.x + 2 < 10 &&
+    cell.y + 2 < 10 &&
+    !matrice[cell.x + 2][cell.y + 2].userClicked
+  ) {
+    matrice[cell.x + 2][cell.y + 2].possibleMove = true
+  }
+
+  if (
+    cell.x + 2 < 10 &&
+    cell.y - 2 >= 0 &&
+    !matrice[cell.x + 2][cell.y - 2].userClicked
+  ) {
+    matrice[cell.x + 2][cell.y - 2].possibleMove = true
+  }
+
+  if (
+    cell.x - 2 >= 0 &&
+    cell.y + 2 < 10 &&
+    !matrice[cell.x - 2][cell.y + 2].userClicked
+  ) {
+    matrice[cell.x - 2][cell.y + 2].possibleMove = true
+  }
+
+  if (
+    cell.x - 2 >= 0 &&
+    cell.y - 2 >= 0 &&
+    !matrice[cell.x - 2][cell.y - 2].userClicked
+  ) {
+    matrice[cell.x - 2][cell.y - 2].possibleMove = true
+  }
+
+  return matrice
 }
 
 const checkTraversability = (

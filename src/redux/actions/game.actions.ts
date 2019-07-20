@@ -1,6 +1,8 @@
-import createGame, { checkTraversability, Cords, Matrice } from '../../game'
-import { AppActions } from '../types'
-import { Game, InitialMove } from '../types/Game'
+import { Dispatch } from 'redux';
+import createGame, { checkAvailable, checkTraversability, Cords, Matrice } from '../../game';
+import { AppState } from '../store';
+import { AppActions } from '../types';
+import { Game, InitialMove } from '../types/Game';
 
 export const startGame = (game: Game): AppActions => {
   const g = createGame(game.startCord, game.level)
@@ -28,7 +30,35 @@ export const checkIfTravestable = (
   }
 }
 
-export const Move = (cords: Cords): AppActions => ({
-  type: 'MOVE',
-  cords: cords,
-})
+export const UserClick = (cords: Cords) => {
+  return (dispatch: Dispatch<AppActions>, getState: () => AppState) => {
+    
+    const matrice = getState().game.game.game
+    matrice[cords.x][cords.y].userClicked = true
+    dispatch(Move(cords))
+    
+    return dispatch({
+      type: 'SET_USER_CLICKED',
+      userClicked: true,
+      game: matrice,
+    })
+  }
+}
+
+export const Move = (cords: Cords): AppActions => {
+  return {
+    type: 'MOVE',
+    cords: cords,
+  }
+}
+
+export const FindAvailableMove = (
+  cords: Cords,
+  matrice: Matrice,
+): AppActions => {
+  const c = checkAvailable(cords, matrice)
+  return {
+    type: 'FIND_AVAILABLE_FROM_CURRENT_MOVE',
+    matrice: c,
+  }
+}

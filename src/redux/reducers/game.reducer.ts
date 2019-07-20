@@ -10,7 +10,7 @@ const defaultState: GameState = {
     isInitial: true,
     cords: null,
   },
-  level: 5,
+  level: 6,
   traversableFields: undefined,
   currentMove: null,
 }
@@ -42,6 +42,30 @@ const gameReducer = (
       return {
         ...state,
         currentMove: action.cords,
+      }
+    case 'FIND_AVAILABLE_FROM_CURRENT_MOVE':
+      return {
+        ...state,
+        game: {
+          ...state.game,
+          game: action.matrice,
+        },
+      }
+    case 'SET_USER_CLICKED':
+      return {
+        ...state,
+        game: {
+          ...state.game,
+          game: action.game,
+        },
+      }
+    case 'MOVE_AND_SET_PLAYED':
+      return {
+        ...state,
+        game: {
+          ...state.game,
+          game: action.payload.matrice,
+        },
       }
     default:
       return state

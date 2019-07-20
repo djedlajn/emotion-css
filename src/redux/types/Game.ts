@@ -1,4 +1,4 @@
-import { Cell, Cords } from '../../game'
+import { Cell, Cords, Matrice } from '../../game'
 
 export interface Game {
   startCord: Cords
@@ -12,7 +12,7 @@ export interface InitialMove {
 
 export interface GameState {
   game: {
-    game: Cell[][]
+    game: Matrice
     generatedMaze: Cell[] | undefined
   }
   lives: number
@@ -27,7 +27,29 @@ export const SET_LIVES = 'SET_LIVES'
 export const SET_INITIAL_MOVE = 'SET_INITIAL_MOVE'
 export const CHECK_TRAVERSABILITY = 'CHECK_TRAVERSABILITY'
 export const MOVE = 'MOVE'
+export const FIND_AVAILABLE_FROM_CURRENT_MOVE =
+  'FIND_AVAILABLE_FROM_CURRENT_MOVE'
 
+export const MOVE_AND_SET_PLAYED = 'MOVE_AND_SET_PLAYED'
+
+export const SET_USER_CLICKED = 'SET_USER_CLICKED'
+
+export interface MoveAndSetPlayedAction {
+  type: typeof MOVE_AND_SET_PLAYED
+  payload: {
+    cords: Cords
+    matrice: Matrice
+  }
+}
+export interface SetUserClickedAction {
+  type: typeof SET_USER_CLICKED
+  userClicked: boolean
+  game: Matrice
+}
+export interface AvailableFromCurrentMoveAction {
+  type: typeof FIND_AVAILABLE_FROM_CURRENT_MOVE
+  matrice: Matrice
+}
 export interface MoveAction {
   type: typeof MOVE
   cords: Cords | null
@@ -41,7 +63,7 @@ export interface CheckTraversabilityAction {
 export interface StartGameAction {
   type: typeof START_GAME
   game: {
-    game: Cell[][]
+    game: Matrice
     generatedMaze: Cell[] | undefined
   }
 }
@@ -62,3 +84,6 @@ export type GameActionTypes =
   | SetInitialMoveAction
   | CheckTraversabilityAction
   | MoveAction
+  | AvailableFromCurrentMoveAction
+  | SetUserClickedAction
+  | MoveAndSetPlayedAction

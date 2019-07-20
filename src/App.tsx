@@ -4,11 +4,17 @@ import { jsx } from '@emotion/core'
 import css from '@emotion/css/macro'
 import React, { useEffect } from 'react'
 import { connect, useSelector } from 'react-redux'
-import { Dispatch } from 'redux'
+import { bindActionCreators } from 'redux'
+import { ThunkDispatch } from 'redux-thunk'
 import Cell from './components/Cell'
 import GameCell from './components/GameCell'
+import { Cords } from './game'
 import Layout from './layouts/Layout'
-import { setInitalMove, startGame } from './redux/actions/game.actions'
+import {
+  setInitalMove,
+  startGame,
+  UserClick,
+} from './redux/actions/game.actions'
 import { AppState } from './redux/store'
 import { AppActions } from './redux/types'
 import { Game, GameState, InitialMove } from './redux/types/Game'
@@ -19,21 +25,19 @@ interface OwnProps {}
 
 type Prop = OwnProps & LinkDispatchToProps & LinkMapStateToProps
 
-const App: React.FC<Prop> = ({ startGame, game: {}, setInitalMove }) => {
-  const cords = useSelector((state: AppState) => state.game.initialMove.cords)
+const App: React.FC<Prop> = ({ startGame, setUserClicked }) => {
   const isInitial = useSelector(
     (state: AppState) => state.game.initialMove.isInitial,
   )
 
   const game = useSelector((state: AppState) => state.game.game.game)
   const maze = useSelector((state: AppState) => state.game.game.generatedMaze)
-  const level = useSelector((state: AppState) => state.game.level)
+  const move = useSelector((state: AppState) => state.game.currentMove)
 
   useEffect(() => {
-    if (cords) {
-      startGame({ startCord: cords, level })
-    }
-  }, [cords, level, startGame])
+    console.log('G', game)
+  }, [game, move])
+
   return (
     <Layout>
       <div>
@@ -63,23 +67,13 @@ const App: React.FC<Prop> = ({ startGame, game: {}, setInitalMove }) => {
           >
             {isInitial
               ? arr.map((i, idx) => {
-                  return <Cell value={i} key={idx} />
+                  return <Cell value={i} key={idx} matrice={game} />
                 })
               : maze &&
-                game.map(
-                  i =>
-                    i.map((e, edx) => {
-                      return <GameCell x={e.x} y={e.y} key={edx} />
-                    }),
-                  // i.map((e, edx) => {
-                  //   return (
-                  //     <GameCell
-                  //       value={e}
-                  //       key={edx}
-                  //       isInitial={e === 1 ? true : false}
-                  //     />
-                  //   )
-                  // }),
+                game.map(i =>
+                  i.map((e, edx) => {
+                    return <GameCell x={e.x} y={e.y} key={edx} matrice={game} />
+                  }),
                 )}
           </div>
         </div>
@@ -95,6 +89,7 @@ interface LinkMapStateToProps {
 interface LinkDispatchToProps {
   startGame: (game: Game) => void
   setInitalMove: (move: InitialMove) => void
+  setUserClicked: (cords: Cords) => void
 }
 
 const mapStateToProps = (
@@ -105,8 +100,10 @@ const mapStateToProps = (
 })
 
 const mapDispatchToProps = (
-  dispatch: Dispatch<AppActions>,
+  dispatch: ThunkDispatch<any, any, AppActions>,
+  ownProps: OwnProps,
 ): LinkDispatchToProps => ({
+  setUserClicked: bindActionCreators(UserClick, dispatch),
   startGame: game => dispatch(startGame(game)),
   setInitalMove: move => dispatch(setInitalMove(move)),
 })
