@@ -1,4 +1,4 @@
-interface Cell extends Cords {
+export interface Cell extends Cords {
   visited: boolean
   neibhoursAvailable: Cords[]
   pickedEdge: Cords | {}
@@ -30,14 +30,14 @@ const matrix = (width: number, height: number): Cell[][] => {
         y: 0,
         visited: false,
         neibhoursAvailable: [],
-        pickedEdge: {}
-      })
+        pickedEdge: {},
+      }),
     )
 }
 
 const checkTraversability = (
   startCords: Cords,
-  matrice: Matrice
+  matrice: Matrice,
 ): Cell | undefined => {
   // Check left
   if (startCords.x === undefined) {
@@ -105,7 +105,7 @@ const checkTraversability = (
 const generateMaze = (
   matrice: Cell[][],
   startCords: { x: number; y: number },
-  level: number
+  level: number,
 ): Cell[] | undefined => {
   const traversable = checkTraversability(startCords, matrice)
   if (!traversable) return undefined
@@ -118,24 +118,10 @@ const generateMaze = (
       return [traversable, ...path]
     }
   }
-  // console.log('failure')
   traversable.visited = false
   return undefined
 }
 
-let matrice = matrix(10, 10).map(
-  (i, idx): Cell[] => {
-    return i.map((_, idy) => {
-      return {
-        x: idx,
-        y: idy,
-        visited: false,
-        neibhoursAvailable: [],
-        pickedEdge: {}
-      }
-    })
-  }
-)
 const startGame = (startCords: Cords, level: number) => {
   let matrice = matrix(10, 10).map(
     (i, idx): Cell[] => {
@@ -145,14 +131,14 @@ const startGame = (startCords: Cords, level: number) => {
           y: idy,
           visited: false,
           neibhoursAvailable: [],
-          pickedEdge: {}
+          pickedEdge: {},
         }
       })
-    }
+    },
   )
-  const gen = generateMaze(matrice, startCords, 33)
+  const gen = generateMaze(matrice, startCords, level + 1)
 
-  const mtr: number[][] = Array(10)
+  const mtr: Cell[][] = Array(10)
     .fill(0)
     .map(_ => Array(10).fill(0))
 
@@ -160,11 +146,13 @@ const startGame = (startCords: Cords, level: number) => {
   if (gen) {
     gen.map(i => {
       num++
-      mtr[i.x][i.y] = num
+      mtr[i.x][i.y] = i
     })
   }
 
-  return mtr
+  return { game: mtr, generatedMaze: gen }
 }
+
+export { checkTraversability }
 
 export default startGame

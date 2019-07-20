@@ -16,5 +16,5 @@
     "jsx": "preserve",
     "types": ["@emotion/core", "@emotion/css", "@emotion/css/macro"]
   },
-  "include": ["src"]
+  "include": ["src", "typings"]
 }

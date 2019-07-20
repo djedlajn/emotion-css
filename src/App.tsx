@@ -2,26 +2,38 @@
 
 import { jsx } from '@emotion/core'
 import css from '@emotion/css/macro'
-import React, { useState } from 'react'
-import { connect } from 'react-redux'
+import React, { useEffect } from 'react'
+import { connect, useSelector } from 'react-redux'
+import { Dispatch } from 'redux'
 import Cell from './components/Cell'
-import { Cords } from './game'
+import GameCell from './components/GameCell'
 import Layout from './layouts/Layout'
-import { GameState } from './redux/game/game.types'
-import { AppState } from './redux/rootReducer'
+import { setInitalMove, startGame } from './redux/actions/game.actions'
+import { AppState } from './redux/store'
+import { AppActions } from './redux/types'
+import { Game, GameState, InitialMove } from './redux/types/Game'
 
 const arr = Array.from(Array(100).keys())
 
-interface AppProps {}
+interface OwnProps {}
 
-type Props = AppProps & LinkStateToProps & LinkStateToProps
+type Prop = OwnProps & LinkDispatchToProps & LinkMapStateToProps
 
-const App: React.FC<Props> = ({ gameState }) => {
-  const [initialMove, setInitalMove] = useState<Cords | false>(false)
-  const [game, setGame] = useState<number[][]>([])
+const App: React.FC<Prop> = ({ startGame, game: {}, setInitalMove }) => {
+  const cords = useSelector((state: AppState) => state.game.initialMove.cords)
+  const isInitial = useSelector(
+    (state: AppState) => state.game.initialMove.isInitial,
+  )
 
-  console.log(gameState)
+  const game = useSelector((state: AppState) => state.game.game.game)
+  const maze = useSelector((state: AppState) => state.game.game.generatedMaze)
+  const level = useSelector((state: AppState) => state.game.level)
 
+  useEffect(() => {
+    if (cords) {
+      startGame({ startCord: cords, level })
+    }
+  }, [cords, level, startGame])
   return (
     <Layout>
       <div>
@@ -36,6 +48,11 @@ const App: React.FC<Props> = ({ gameState }) => {
             `}
           >
             123
+            <button
+              onClick={() => startGame({ level: 5, startCord: { x: 0, y: 0 } })}
+            >
+              START
+            </button>
           </div>
           <div
             css={css`
@@ -44,14 +61,26 @@ const App: React.FC<Props> = ({ gameState }) => {
               height: calc(100vh - 100px);
             `}
           >
-            {/* {initialMove &&
-              arr.map((i, idx) => {
-                return <Cell value={i} key={idx} initial={setInitalMove} />
-              })} */}
-
-            {arr.map((i, idx) => {
-              return <Cell value={i} key={idx} initial={setInitalMove} />
-            })}
+            {isInitial
+              ? arr.map((i, idx) => {
+                  return <Cell value={i} key={idx} />
+                })
+              : maze &&
+                game.map(
+                  i =>
+                    i.map((e, edx) => {
+                      return <GameCell x={e.x} y={e.y} key={edx} />
+                    }),
+                  // i.map((e, edx) => {
+                  //   return (
+                  //     <GameCell
+                  //       value={e}
+                  //       key={edx}
+                  //       isInitial={e === 1 ? true : false}
+                  //     />
+                  //   )
+                  // }),
+                )}
           </div>
         </div>
       </div>
@@ -59,17 +88,28 @@ const App: React.FC<Props> = ({ gameState }) => {
   )
 }
 
-interface LinkStateToProps {
-  gameState: GameState
+interface LinkMapStateToProps {
+  game: GameState
 }
 
-interface LinkDispatchToProps {}
+interface LinkDispatchToProps {
+  startGame: (game: Game) => void
+  setInitalMove: (move: InitialMove) => void
+}
 
-const mapStateToProps = (state: AppState, ownProps: AppProps) => ({
-  gameState: state.game,
+const mapStateToProps = (
+  state: AppState,
+  ownProps: OwnProps,
+): LinkMapStateToProps => ({
+  game: state.game,
 })
 
-const mapDispatchToProps = (dispatch, props) => ({})
+const mapDispatchToProps = (
+  dispatch: Dispatch<AppActions>,
+): LinkDispatchToProps => ({
+  startGame: game => dispatch(startGame(game)),
+  setInitalMove: move => dispatch(setInitalMove(move)),
+})
 
 export default connect(
   mapStateToProps,
